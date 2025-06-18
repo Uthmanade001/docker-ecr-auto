@@ -6,10 +6,10 @@ app = Flask(__name__)
 
 def get_db_connection():
     conn = psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "localhost"),
-        database=os.getenv("POSTGRES_DB", "mydb"),
-        user=os.getenv("POSTGRES_USER", "myuser"),
-        password=os.getenv("POSTGRES_PASSWORD", "mypassword")
+        host=os.getenv("POSTGRES_HOST"),
+        database=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD")
     )
     return conn
 
@@ -28,4 +28,3 @@ def index():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
-# This code is a Flask application that connects to a PostgreSQL database.
