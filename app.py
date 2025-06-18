@@ -1,10 +1,9 @@
-#application to connect to PostgreSQL using Flask and psycopg2
 from flask import Flask
 import psycopg2
 import os
 
 app = Flask(__name__)
-# Function to get a database connection
+
 def get_db_connection():
     conn = psycopg2.connect(
         host=os.getenv("POSTGRES_HOST", "db"),
@@ -23,9 +22,10 @@ def index():
         version = cur.fetchone()
         cur.close()
         conn.close()
-        return f"✅ Connected to PostgreSQL!<br>Version: {version[0]}"
+        return f"✅ Connected to PostgreSQL!<br>Postgres Version: {version[0]}"
     except Exception as e:
         return f"❌ Failed to connect to PostgreSQL<br>Error: {str(e)}"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
+

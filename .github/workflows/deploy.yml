@@ -1,4 +1,4 @@
-name: Build & Deploy Flask + PostgreSQL to EC2
+name: Deploy Flask + Postgres to EC2 via Docker Compose
 
 on:
   push:
@@ -12,9 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # (Optional: If you're still building Docker image & pushing to ECR, you can leave ECR steps here)
-
-    - name: SSH into EC2 & deploy with Docker Compose
+    - name: SSH into EC2 & deploy using Docker Compose
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -23,7 +21,7 @@ jobs:
         script: |
           cd /home/ec2-user
           if [ ! -d docker-ecr-auto ]; then
-            git clone https://github.com/Uthmanade001/docker-ecr-auto.git
+            git clone https://github.com/YOUR_GITHUB_USERNAME/docker-ecr-auto.git
           else
             cd docker-ecr-auto && git pull
           fi
@@ -32,3 +30,4 @@ jobs:
 
           docker compose down || true
           docker compose up -d --build
+

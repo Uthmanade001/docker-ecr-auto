@@ -8,23 +8,24 @@ services:
       POSTGRES_DB: mydb
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   web:
     build: .
     container_name: flask-app
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
     environment:
       POSTGRES_HOST: db
       POSTGRES_DB: mydb
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
 
 volumes:
   pgdata:
+
