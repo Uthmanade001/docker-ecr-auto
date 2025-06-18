@@ -21,7 +21,6 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          # If repo doesn't exist, clone it
           cd /home/ec2-user
           if [ ! -d docker-ecr-auto ]; then
             git clone https://github.com/Uthmanade001/docker-ecr-auto.git
@@ -29,11 +28,7 @@ jobs:
             cd docker-ecr-auto && git pull
           fi
 
-          # Navigate to repo folder
           cd /home/ec2-user/docker-ecr-auto
 
-          # Stop old containers if running
           docker compose down || true
-
-          # Build and run containers fresh
           docker compose up -d --build
