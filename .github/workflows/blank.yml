@@ -1,46 +1,35 @@
-name: Build & Push Docker Image to ECR
+name: Deploy Flask to EC2 with RDS
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
-
-    - name: Build, tag, and push image to ECR
-      env:
-        ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      run: |
-        IMAGE_TAG=latest
-        docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-        docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-    - name: Deploy to EC2
+    - name: SSH into EC2 & deploy using Docker Compose
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          docker stop app || true
-          docker rm app || true
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-          docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
-          docker run -d -p 80:5000 --name app ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+          cd /home/ec2-user
+          if [ ! -d docker-ecr-auto ]; then
+            git clone https://github.com/Uthmanade001/docker-ecr-auto.git
+          else
+            cd docker-ecr-auto && git pull
+          fi
+
+          cd /home/ec2-user/docker-ecr-auto  # ✅ VERY IMPORTANT
+          
+          # Ensure docker uses new file
+          docker compose down || true
+          docker compose pull || true
+          docker compose build
+          docker compose up -d
