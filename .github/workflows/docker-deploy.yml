@@ -21,7 +21,7 @@ jobs:
         script: |
           cd /home/ec2-user
           if [ ! -d docker-ecr-auto ]; then
-            git clone https://github.com/YOUR_GITHUB_USERNAME/docker-ecr-auto.git
+            git clone https://github.com/Uthmanade001/docker-ecr-auto.git
           else
             cd docker-ecr-auto && git pull
           fi
