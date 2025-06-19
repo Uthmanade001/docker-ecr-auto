@@ -24,7 +24,7 @@ def index():
         conn.close()
         return f"✅ Connected to RDS PostgreSQL!<br>Version: {version[0]}"
     except Exception as e:
-        return f"❌ Failed to connect to PostgreSQL<br>Error: {str(e)}"
+        return f"❌ write Failed to connect to PostgreSQL<br>Error: {str(e)}"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
