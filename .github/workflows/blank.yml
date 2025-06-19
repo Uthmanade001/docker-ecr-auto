@@ -1,4 +1,4 @@
-name: Deploy Flask to EC2 with RDS
+name: Full Production Deployment to EC2
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: SSH into EC2 & deploy using Docker Compose
+    - name: Deploy via SSH to EC2
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -20,16 +20,14 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         script: |
           cd /home/ec2-user
-          if [ ! -d docker-ecr-auto ]; then
-            git clone https://github.com/Uthmanade001/docker-ecr-auto.git
+          if [ ! -d docker-flask-prod ]; then
+            git clone https://github.com/Uthmanade001/docker-flask-prod.git
           else
-            cd docker-ecr-auto && git pull
+            cd docker-flask-prod && git pull
           fi
 
-          cd /home/ec2-user/docker-ecr-auto  # ✅ VERY IMPORTANT
-          
-          # Ensure docker uses new file
-          docker compose down || true
-          docker compose pull || true
-          docker compose build
-          docker compose up -d
+          cd /home/ec2-user/docker-flask-prod
+
+          docker compose down --remove-orphans || true
+          docker compose up -d --build
+

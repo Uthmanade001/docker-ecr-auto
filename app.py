@@ -6,10 +6,10 @@ app = Flask(__name__)
 
 def get_db_connection():
     conn = psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "localhost"),
-        database=os.getenv("POSTGRES_DB", "mydb"),
-        user=os.getenv("POSTGRES_USER", "myuser"),
-        password=os.getenv("POSTGRES_PASSWORD", "mypassword")
+        host=os.getenv("POSTGRES_HOST"),
+        database=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD")
     )
     return conn
 
@@ -22,9 +22,9 @@ def index():
         version = cur.fetchone()
         cur.close()
         conn.close()
-        return f"✅ Connected to RDS PostgreSQL!<br>Version: {version[0]}"
+        return f"✅ Connected to PostgreSQL!<br>Version: {version[0]}"
     except Exception as e:
-        return f"❌ write Failed to connect to PostgreSQL<br>Error: {str(e)}"
+        return f"❌ Failed to connect to PostgreSQL<br>Error: {str(e)}"
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=80)
